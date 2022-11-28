@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Type;
@@ -63,8 +64,15 @@ public class Person {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dob;
-    
 
+    @Positive
+    private Integer height;
+
+    @Positive
+    private Integer weight;
+
+    @Positive
+    private Integer goalStep;
     /* HashMap is used to store JSON for daily "stats"
     "stats": {
         "2022-11-13": {
@@ -79,11 +87,14 @@ public class Person {
     
 
     // Constructor used when building object from an API
-    public Person(String email, String password, String name, Date dob) {
+    public Person(String email, String password, String name, Date dob, Integer height, Integer weight) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.dob = dob;
+        this.height = height;
+        this.weight = weight;
+        this.goalStep = (height/2 + weight)*70;
     }
 
     // A custom getter to return age from dob attribute
@@ -92,6 +103,17 @@ public class Person {
             LocalDate birthDay = this.dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             return Period.between(birthDay, LocalDate.now()).getYears(); }
         return -1;
+    }
+
+    public String toString() {
+        return ( "{ \"name\": "  +this.name+  ", " + "\"email\": "  +this.email+  ", " + "\"password\": "  +this.password+  ", " + "\"dateOfBirth\": "  +this.dob+  ", " + "\"age\": "  +this.getAge()+ ", " + "\"height(cm)\": "  +this.height+ ", " + "\"weight(kg)\": "  +this.weight+ ", " + "\"stepgoal\": "  +this.goalStep+ " }" );
+    }
+
+    public static void main(String[] args) {
+        Person p0 = new Person();
+        Person p1 = new Person("aidanywu@gmail.com", "password", "Aidan Wu", new java.util.GregorianCalendar(2006,4,6).getTime(), 200, 60);
+        System.out.println(p0);
+        System.out.println(p1);
     }
 
 }
